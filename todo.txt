@@ -1,9 +1,5 @@
-Yet to do:
-- Spirals not yet achievable, but something like a traveling roll is.
-- Speed up ODE calculations if possible.
-
-Finished:
 - Loading r_0 must be reviewed (causing problems with loading W).
 - Runs slowly in general. Use broadcasting for arrays in dfs.d_theta_d_t. Also simplify periodic boundary condition distance calculations.
 - N=1 still must be removed from main.py to allow N to be set correctly.
+- Spirals not yet achievable, but something like a traveling roll is.
 - Change num_video_loops to 100 (or use while loop) and interpolation to 'bicubic' for cooler visuals.
