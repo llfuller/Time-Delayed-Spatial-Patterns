@@ -91,6 +91,7 @@ Accepts (i,j) positions and evaluates (then returns) d(theta)/dt matrix (element
 When coding, it will help to treat all (i,j) matrices as if they are one element 
 """
 def d_theta_d_t(theta, t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr):
+
     print("Simulating for t="+str(t))
     # restore theta from flattened (num_rows*num_cols) to initial shape (num_rows, num_cols) for matrix algebra purposes
     theta_ij_matrix_at_t = sp.array(theta).reshape((num_rows,num_cols))
@@ -111,6 +112,5 @@ def d_theta_d_t(theta, t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, 
 System of ODEs to be solved
 """
 def theODEs(theta, t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr):
-    # t should be a time here, I think
     dthetadt = d_theta_d_t(sp.mod(theta,2*sp.pi), t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr)
     return dthetadt.reshape(num_cols*num_rows)

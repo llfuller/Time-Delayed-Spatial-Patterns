@@ -3,3 +3,6 @@
 *.iml
 multiprocess_idea.py
 *.npz
+*.npy
+DDE_backup.m
+attempt_1.fig

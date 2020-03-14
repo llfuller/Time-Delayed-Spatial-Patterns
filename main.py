@@ -15,8 +15,8 @@ from os import path
 #######################################################################
 sp.random.seed(2020)
 
-num_rows = 64  # 500 x 500 too big
-num_cols = 64  # 150 x 150 gives a 4 GB file
+num_rows = 25  # 500 x 500 too big
+num_cols = 25  # 150 x 150 gives a 4 GB file
                 # 100 x 100 gives a 800 MB file
 
 grid_arr = sp.array([[[i,j] for j in range(num_cols)] for i in range(num_rows)])
@@ -41,15 +41,16 @@ gamma = 5 * sp.pi / 32 # one of values used in paper
 unit_vector_e = sp.array([0,1])
 phi_0 = 0
 # initial_conditions = sp.zeros((num_rows, num_cols)).reshape(num_rows*num_cols) # Flattens initial conditions
-initial_conditions = sp.random.random((num_rows, num_cols)).reshape(num_rows*num_cols) # Flattens initial conditions
-# initial_conditions = sp.array([[gamma*i for j in range(num_cols)] for i in range(num_rows)]).reshape(num_rows*num_cols) # Flattens initial conditions
-numTimeSteps = 30
+# initial_conditions = sp.random.random((num_rows, num_cols)).reshape(num_rows*num_cols) # Flattens initial conditions
+initial_conditions = sp.array([[gamma*i for j in range(num_cols)] for i in range(num_rows)]).reshape(num_rows*num_cols) # Flattens initial conditions
+# initial_conditions = sp.array([[gamma*(i+j) for j in range(num_cols)] for i in range(num_rows)]).reshape(num_rows*num_cols) # Flattens initial conditions
+# initial_conditions = sp.array([[gamma*(i*j) for j in range(num_cols)] for i in range(num_rows)]).reshape(num_rows*num_cols) # Flattens initial conditions
+numTimeSteps = 10
 t = sp.linspace(0,8,numTimeSteps)
 # phi = dfs.calc_phi(gamma, unit_vector_e, phi_0, grid_arr)
 phi = sp.array([[gamma*i for j in range(num_cols)] for i in range(num_rows)])
 # phi = sp.random.random((num_rows,num_cols))
 
-parameters = [num_rows, num_cols, w, K, v, Omega, gamma, unit_vector_e, r_0, initial_conditions,numTimeSteps, t]
 
 #######################################################################
 ### Calculate W matrix
@@ -61,39 +62,37 @@ dist_grid_arr = sp.zeros((num_rows, num_cols, num_rows, num_cols)) # i, j, k, l
 start_time = time.time()
 W, dist_grid_arr = dfs.calc_W_and_dist_grid(num_rows, num_cols, r_0)
 print("W and dist_grid_arr calculated.")
-# Optional code to sample how W and dist look to make sure they look correct for chosen (i,j)
-# pyplt.figure()
-# pyplt.imshow(dist_grid_arr[round(num_rows/5),0,:,:])
-# pyplt.figure()
-# pyplt.imshow(W[round(num_rows/5),0,:,:])
-# pyplt.show()
 
 #######################################################################
 ### Rest of the Calculations
 #######################################################################
 N = dfs.calc_N(W)
-# phi  = dfs.calc_phi(gamma, unit_vector_e, phi_0, grid_arr)
-print("Calculating solution for all selected times.")
-solution = odeint(dfs.theODEs, initial_conditions, t, args=(phi, w, K, N, v, Omega, num_rows, num_cols, W,
-                                                            dist_grid_arr))
-sp.savez("solution_("+str(num_cols)+","+str(num_rows)+")_r0_"+str(r_0), solution = solution, parameters = parameters, dist_grid_arr = dist_grid_arr)
-#######################################################################
-### Plot Solution
-#######################################################################
-# loading
-solution = sp.load("solution_("+str(num_cols)+","+str(num_rows)+")_r0_"+str(r_0)+'.npz')['solution']
-print("Plotting solution")
-solution_2d = solution.reshape((numTimeSteps,num_rows,num_cols))
-print(sp.shape(solution))
-pyplt.title("Solution at Final Time")
-pyplt.imshow(solution_2d[numTimeSteps-1])
-pyplt.show()
-
-fig, ax = pyplt.subplots()
-num_video_loops = 100
-for j in range(num_video_loops):
-    for i in range(len(solution_2d)):
-        ax.cla()
-        ax.imshow(solution_2d[i])#, cmap = 'twilight',interpolation = 'bicubic')
-        ax.set_title("Solution at frame {}".format(i))
-        pyplt.pause(0.1)
+scalars = sp.array([w, K, v, Omega, gamma, num_rows, num_cols, numTimeSteps])
+dist_grid_arr_flattened = dist_grid_arr.reshape((num_rows*num_cols*num_rows*num_cols))
+lags_whole = dist_grid_arr/v # needed to reduce number of lags to make memory manageable.
+lags_reduced = sp.sort(sp.unique(dist_grid_arr_flattened/v))[1:] # needed to reduce number of lags to make memory manageable.
+lag_indices = sp.zeros((num_rows,num_cols,num_rows,num_cols))
+i=0
+l=0
+for j in range(num_cols):
+    for k in range(num_rows):
+        if sp.size(sp.where(lags_reduced == lags_whole[i,j,k,l])[0])!=0:
+            # print(sp.where(lags_reduced == lags_whole[i,j,k,l])[0][0])
+            lag_indices[i,j,k,l] = sp.where(lags_reduced == lags_whole[i,j,k,l])[0]+1
+for i in range(1,num_rows):
+    lag_indices[i, :, :, :] += sp.roll(lag_indices[0,:,:,:],i,axis=1)
+for l in range(1,num_cols):
+    lag_indices[:, :, :, l] += sp.roll(lag_indices[:,:,:,0],l,axis=1)
+lag_indices[lag_indices==0] = sp.nan
+sp.save('generated_values/W.npy', W)
+sp.save('generated_values/dist_grid_arr.npy', dist_grid_arr)
+sp.save('generated_values/dist_grid_arr_flattened.npy', dist_grid_arr_flattened)
+sp.save('generated_values/lags_reduced.npy', lags_reduced)
+sp.save('generated_values/lags_whole.npy', lags_whole)
+sp.save('generated_values/lag_indices.npy', lag_indices)
+sp.save('generated_values/scalars.npy', scalars)
+sp.save('generated_values/phi.npy', phi)
+sp.save('generated_values/N.npy', N)
+sp.save('generated_values/initial_conditions.npy',initial_conditions)
+print("Now run MATLAB code DDE.m to calculate solution for all selected times.")
+# Now run MATLAB code DDE.m
