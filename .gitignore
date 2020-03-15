@@ -6,3 +6,7 @@ multiprocess_idea.py
 *.npy
 DDE_backup.m
 attempt_1.fig
+DDE_backup_close_to_working.m
+*.fig
+DDE.asv
+3d_ish_pattern_(4b_attempt).png

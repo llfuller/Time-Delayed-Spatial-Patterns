@@ -72,15 +72,15 @@ def calc_N(W):
 """
 Phi matrix
 """
-def calc_phi(gamma, unit_vector_e, phi_0, r):
-    # r_times_cos_of_angle_between = (r*unit_vector_e[0])[:,:,0]+(r*unit_vector_e[1])[:,:,1]
-    r_dot_e = (r*unit_vector_e[0])[:,:,0]+(r*unit_vector_e[1])[:,:,1]
-    phi = sp.multiply(gamma , r_dot_e) + phi_0
-    return phi
+# def calc_phi(gamma, unit_vector_e, phi_0, r):
+#     # r_times_cos_of_angle_between = (r*unit_vector_e[0])[:,:,0]+(r*unit_vector_e[1])[:,:,1]
+#     r_dot_e = (r*unit_vector_e[0])[:,:,0]+(r*unit_vector_e[1])[:,:,1]
+#     phi = sp.multiply(gamma , r_dot_e) + phi_0
+#     return phi
 
-# """
-# Theta matrix evaluated at specific time
-# """
+"""
+Theta matrix evaluated at specific time
+"""
 # def calc_theta(Omega, t, phi):
 #     # phi is (num_rows, num_cols) dimensional.
 #     theta = sp.multiply(Omega,t)+phi
@@ -90,27 +90,27 @@ def calc_phi(gamma, unit_vector_e, phi_0, r):
 Accepts (i,j) positions and evaluates (then returns) d(theta)/dt matrix (elements are (i,j) component)
 When coding, it will help to treat all (i,j) matrices as if they are one element 
 """
-def d_theta_d_t(theta, t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr):
-
-    print("Simulating for t="+str(t))
-    # restore theta from flattened (num_rows*num_cols) to initial shape (num_rows, num_cols) for matrix algebra purposes
-    theta_ij_matrix_at_t = sp.array(theta).reshape((num_rows,num_cols))
-    # Get theta_ij_matrix_at_t into form (i,j,k,l) by broadcasting (1 length in k and l indices).
-    # This is an efficient way of making sure theta is the same for all k and l (value changes only based on i and j):
-    theta_ij_matrix_at_t_extend = theta_ij_matrix_at_t[:,:,None,None] # (i,j,k,l)
-    # (i,j,k,l)
-    phi_ij_extend = phi[:,:,None,None] # (i,j,k,l)
-    phi_kl_extend = phi_ij_extend.transpose((2,3,0,1)) # name the axes (i,j,k,l)
-    # Reminder that dist_grid_arr has shape (i, j, k, l)
-    theta_kl_delayed = sp.multiply(Omega,(t-sp.divide(dist_grid_arr,v)))+phi_kl_extend # (i,j,k,l)
-    sum_term = sp.einsum('ijkl,ijkl->ij',W_matrix, sp.sin(theta_kl_delayed - theta_ij_matrix_at_t_extend)) # (i,j)
-    dthetadt_final = w + sp.multiply(sp.divide(float(K),N) , sum_term) # (array with indices (i,j))
-    return dthetadt_final
+# def d_theta_d_t(theta, t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr):
+#
+#     print("Simulating for t="+str(t))
+#     # restore theta from flattened (num_rows*num_cols) to initial shape (num_rows, num_cols) for matrix algebra purposes
+#     theta_ij_matrix_at_t = sp.array(theta).reshape((num_rows,num_cols))
+#     # Get theta_ij_matrix_at_t into form (i,j,k,l) by broadcasting (1 length in k and l indices).
+#     # This is an efficient way of making sure theta is the same for all k and l (value changes only based on i and j):
+#     theta_ij_matrix_at_t_extend = theta_ij_matrix_at_t[:,:,None,None] # (i,j,k,l)
+#     # (i,j,k,l)
+#     phi_ij_extend = phi[:,:,None,None] # (i,j,k,l)
+#     phi_kl_extend = phi_ij_extend.transpose((2,3,0,1)) # name the axes (i,j,k,l)
+#     # Reminder that dist_grid_arr has shape (i, j, k, l)
+#     theta_kl_delayed = sp.multiply(Omega,(t-sp.divide(dist_grid_arr,v)))+phi_kl_extend # (i,j,k,l)
+#     sum_term = sp.einsum('ijkl,ijkl->ij',W_matrix, sp.sin(theta_kl_delayed - theta_ij_matrix_at_t_extend)) # (i,j)
+#     dthetadt_final = w + sp.multiply(sp.divide(float(K),N) , sum_term) # (array with indices (i,j))
+#     return dthetadt_final
 
 
 """
 System of ODEs to be solved
 """
-def theODEs(theta, t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr):
-    dthetadt = d_theta_d_t(sp.mod(theta,2*sp.pi), t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr)
-    return dthetadt.reshape(num_cols*num_rows)
+# def theODEs(theta, t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr):
+#     dthetadt = d_theta_d_t(sp.mod(theta,2*sp.pi), t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr)
+#     return dthetadt.reshape(num_cols*num_rows)
