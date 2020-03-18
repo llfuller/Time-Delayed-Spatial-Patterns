@@ -10,3 +10,9 @@ DDE_backup_close_to_working.m
 *.fig
 DDE.asv
 3d_ish_pattern_(4b_attempt).png
+backup_different_methods.txt
+compare_before.png
+DDE_runtimes.txt
+larger_resolution_spiral_stretched.png
+large_resolution_spiral.png
+sol_matrix.mat
