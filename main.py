@@ -15,10 +15,12 @@ from os import path
 #######################################################################
 sp.random.seed(2020)
 
+Sparse = True;
+
 num_rows = 30  # 500 x 500 too big
 num_cols = 30  # 150 x 150 gives a 4 GB file
                 # 100 x 100 gives a 800 MB file
-use_this_param_set = '4a'
+use_this_param_set = 'NewB'
 grid_arr = sp.array([[[i,j] for j in range(num_cols)] for i in range(num_rows)])
 
 # The three most important tunable parameters:
@@ -30,7 +32,9 @@ param_set = {'3a' : [1.25, 25, 1.0],
              '3d' : [0.6, 10, 1.0/1.1],
              '4a' : [1.0,  4, 1.0],
              '4b' : [0.4,  7, 1.0],
-             '4c' : [0.8,  8, 1.0]
+             '4c' : [0.8,  8, 1.0],
+             'NewA' : [0.2,  8, 1.0],
+             'NewB' : [0.2,  10, 1.25],
             }
 K, r_0, v = param_set[use_this_param_set]
 
@@ -62,7 +66,10 @@ N = sp.empty((num_rows, num_cols))
 dist_grid_arr = sp.zeros((num_rows, num_cols, num_rows, num_cols)) # i, j, k, l
 # Calculate W_klij for all ij and kl.
 start_time = time.time()
-W, dist_grid_arr = dfs.calc_W_and_dist_grid(num_rows, num_cols, r_0)
+if Sparse:
+     W, dist_grid_arr = dfs.calc_W_and_dist_grid_sparse(num_rows, num_cols, r_0)
+else:
+    W, dist_grid_arr = dfs.calc_W_and_dist_grid(num_rows, num_cols, r_0)
 print("W and dist_grid_arr calculated.")
 
 #######################################################################
