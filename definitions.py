@@ -1,6 +1,6 @@
 import scipy as sp
 import time
-
+import random
 """
 Calculates distance between two points (k,l) and (i, j) (named r_kl_ij).
 """
@@ -59,6 +59,45 @@ def calc_W_and_dist_grid(num_rows, num_cols, r_0):
     for l in range(1,num_cols): # already did l = 0
         W[:, :, :, l] += sp.roll(W[:,:,:,0],l,axis=1)
         dist_grid_arr[:, :, :, l] += sp.roll(dist_grid_arr[:,:,:,0],l,axis=1)
+    return W, dist_grid_arr
+
+
+def calc_W_and_dist_grid_sparse(num_rows, num_cols, r_0):
+    W = sp.zeros((num_rows, num_cols, num_rows, num_cols))
+    dist_grid_arr = sp.zeros((num_rows, num_cols, num_rows, num_cols))
+    start_time = time.time()
+    i = 0
+    l = 0
+    for j in range(num_cols):
+        for k in range(num_rows):
+            h_dist_1 = abs(i - k)
+            h_dist_2 = num_rows - abs(i - k)
+            v_dist_1 = abs(j - l)
+            v_dist_2 = num_cols - abs(j - l)
+            if v_dist_1 != v_dist_2:
+                vertical_dist = float(v_dist_1 * (v_dist_1 < v_dist_2) + v_dist_2 * (v_dist_2 < v_dist_1))
+            else:
+                vertical_dist = float(v_dist_1)
+            if h_dist_1 != h_dist_2:
+                horizontal_dist = float(h_dist_1 * (h_dist_1 < h_dist_2) + h_dist_2 * (h_dist_2 < h_dist_1))
+            else:
+                horizontal_dist = float(h_dist_1)
+            r_klij = sp.sqrt(
+                horizontal_dist ** 2 + vertical_dist ** 2)  # calc_r(h_dist_1, h_dist_2, v_dist_1, v_dist_2)
+            if r_klij <= r_0:
+                dist_grid_arr[i, j, k, l] = r_klij
+                if r_klij != 0:  # to avoid infinities
+                    if random.randint(1, 3) == 1:  # only keep random 30% of connections
+                        W[i, j, k, l] = calc_W(r_klij)
+                else:  # This should probably be zero so that it doesn't affect any calculations.
+                    W[i, j, k, l] = 0
+    for i in range(1, num_rows):  # already did i = 0
+        W[i, :, :, :] += sp.roll(W[0, :, :, :], i, axis=1)
+        dist_grid_arr[i, :, :, :] += sp.roll(dist_grid_arr[0, :, :, :], i, axis=1)
+
+    for l in range(1, num_cols):  # already did l = 0
+        W[:, :, :, l] += sp.roll(W[:, :, :, 0], l, axis=1)
+        dist_grid_arr[:, :, :, l] += sp.roll(dist_grid_arr[:, :, :, 0], l, axis=1)
     return W, dist_grid_arr
 
 """
