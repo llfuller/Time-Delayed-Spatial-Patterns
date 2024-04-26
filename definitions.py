@@ -152,4 +152,3 @@ System of ODEs to be solved
 """
 # def theODEs(theta, t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr):
 #     dthetadt = d_theta_d_t(sp.mod(theta,2*sp.pi), t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr)
-#     return dthetadt.reshape(num_cols*num_rows)

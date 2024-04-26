@@ -82,5 +82,3 @@ summed_term = sum(sum_subterm,[3,4]);
 
 dthetadt_final = w + (K*1.0./N) .*summed_term;
 y_final = reshape(dthetadt_final, num_rows*num_cols,1);
-
-

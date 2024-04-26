@@ -106,4 +106,3 @@ sp.save('generated_values/scalars.npy', scalars)
 sp.save('generated_values/N.npy', N)
 sp.save('generated_values/initial_conditions.npy',initial_conditions)
 print("Now run MATLAB code DDE.m to calculate solution for all selected times.")
-# Now run MATLAB code DDE.m
