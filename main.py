@@ -14,11 +14,11 @@ from os import path
 ### Parameters and Initial Conditions
 #######################################################################
 sp.random.seed(2020)
-Sparse = False;
+Sparse = True;
 num_rows = 64  # 500 x 500 too big
 num_cols = 64  # 150 x 150 gives a 4 GB file
                 # 100 x 100 gives a 800 MB file
-use_this_param_set = '4c'
+use_this_param_set = '4a'
 grid_arr = sp.array([[[i,j] for j in range(num_cols)] for i in range(num_rows)])
 
 # The three most important tunable parameters:
@@ -45,8 +45,8 @@ unit_vector_e = sp.array([0,1])
 
 # initial_conditions = sp.zeros((num_rows, num_cols)).reshape(num_rows*num_cols) # Flattens initial conditions
 # initial_conditions[num_rows*5+5]=sp.pi/2
-# initial_conditions = 2*sp.pi*sp.random.random((num_rows, num_cols)).reshape(num_rows*num_cols, order = 'F') # Flattens initial conditions
-initial_conditions = 0.000001*sp.random.random((num_rows, num_cols)).reshape(num_rows*num_cols, order = 'F') # Flattens initial conditions
+initial_conditions = 2*sp.pi*sp.random.random((num_rows, num_cols)).reshape(num_rows*num_cols, order = 'F') # Flattens initial conditions
+# initial_conditions = 0.1*sp.random.random((num_rows, num_cols)).reshape(num_rows*num_cols, order = 'F') # Flattens initial conditions
 # initial_conditions = sp.array([[gamma*i for j in range(num_cols)] for i in range(num_rows)]).reshape(num_rows*num_cols, order = 'F') # Flattens initial conditions
 # initial_conditions = sp.array([[gamma*(i+j) for j in range(num_cols)] for i in range(num_rows)]).reshape(num_rows*num_cols, order = 'F') # Flattens initial conditions
 # initial_conditions = sp.array([[gamma*(i*j) for j in range(num_cols)] for i in range(num_rows)]).reshape(num_rows*num_cols, order = 'F') # Flattens initial conditions
@@ -106,4 +106,3 @@ sp.save('generated_values/scalars.npy', scalars)
 sp.save('generated_values/N.npy', N)
 sp.save('generated_values/initial_conditions.npy',initial_conditions)
 print("Now run MATLAB code DDE.m to calculate solution for all selected times.")
-# Now run MATLAB code DDE.m

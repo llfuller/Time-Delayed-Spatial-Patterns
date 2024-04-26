@@ -25,7 +25,7 @@ num_lag_values = size_of_lag_matrix(1);
 
 theta_lag_ijkl = single(zeros(num_rows,num_cols,num_rows,num_cols));
 
-options = ddeset('RelTol',1e-6,'AbsTol',1e-11);
+options = ddeset('RelTol',1e-5,'AbsTol',1e-10);
 W_4_dim = W;
 
 lag_indices(isnan(lag_indices))=1;
@@ -34,7 +34,7 @@ lag_indices(isnan(lag_indices))=1;
 % thrid argument: [0, 150] is timespan for run
 theta_observed_by_ij_at_kl_temp = single(zeros(num_rows*num_cols, num_rows, num_cols));
 tic
-sol = dde23(@RHS_of_ODE,lag_times_reduced,initial_conditions,[0, 5000],...
+sol = dde23(@RHS_of_ODE,lag_times_reduced,initial_conditions,[0, 500],...
     options,N,w,K,num_rows,num_cols,lag_indices,num_lag_values, W_4_dim, ...
     theta_observed_by_ij_at_kl_temp);
 toc
@@ -44,7 +44,7 @@ sol_matrix = mod(reshape(sol.y,num_rows,num_cols,num_timesteps),2*pi);
 save 'sol_matrix.mat' sol_matrix
 save 'sol_object.mat' sol
 % plot solution
-yint = deval(sol, linspace(0, 1000))
+yint = deval(sol, linspace(0, 500))
 size_yint = size(yint)
 plot_matrix_temp = reshape(yint,num_rows,num_cols,size_yint(2))
 plot_matrix = mod(plot_matrix_temp,2*pi);
@@ -82,5 +82,3 @@ summed_term = sum(sum_subterm,[3,4]);
 
 dthetadt_final = w + (K*1.0./N) .*summed_term;
 y_final = reshape(dthetadt_final, num_rows*num_cols,1);
-
-

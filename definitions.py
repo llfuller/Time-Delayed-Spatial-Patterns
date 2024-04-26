@@ -87,7 +87,7 @@ def calc_W_and_dist_grid_sparse(num_rows, num_cols, r_0):
             if r_klij <= r_0:
                 dist_grid_arr[i, j, k, l] = r_klij
                 if r_klij != 0:  # to avoid infinities
-                    if random.randint(1, 2 ) == 1:  # only keep random 50% of connections
+                    if random.randint(1, 3) == 1:  # only keep random 30% of connections
                         W[i, j, k, l] = calc_W(r_klij)
                 else:  # This should probably be zero so that it doesn't affect any calculations.
                     W[i, j, k, l] = 0
@@ -152,4 +152,3 @@ System of ODEs to be solved
 """
 # def theODEs(theta, t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr):
 #     dthetadt = d_theta_d_t(sp.mod(theta,2*sp.pi), t, phi, w, K, N, v, Omega, num_rows, num_cols, W_matrix, dist_grid_arr)
-#     return dthetadt.reshape(num_cols*num_rows)
