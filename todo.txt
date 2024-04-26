@@ -1,3 +1,7 @@
+Simulations appearto produce meaningful (visually similar to paper) results as of March 2020. 
+However, still runs slowly.
+
+The below is outdated:
 - Loading r_0 must be reviewed (causing problems with loading W).
 - Runs slowly in general. Use broadcasting for arrays in dfs.d_theta_d_t. Also simplify periodic boundary condition distance calculations.
 - N=1 still must be removed from main.py to allow N to be set correctly.
